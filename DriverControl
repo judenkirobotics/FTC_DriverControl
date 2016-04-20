@@ -208,10 +208,13 @@ public class New_Test2 extends OpMode
             min_drive_value = (float)0.10;
             max_drive_value = (float)0.25;
         }
-   
         
         if (left_drive_effort < min_drive_value) left_drive_effort = min_drive_value;
         if (left_drive_effort > max_drive_value) left_drive_effort = max_drive_value;
+        
+        if (right_drive_effort < min_drive_value) right_drive_effort = min_drive_value;
+        if (right_drive_effort > max_drive_value) right_drive_effort = max_drive_value;
+        
         left_Drive.setPower(left_drive_effort);
         right_Drive.setPower(right_drive_effort);
         
@@ -225,12 +228,11 @@ public class New_Test2 extends OpMode
 /*                      winch_extend_control                            */ 
 /*      Control the motor to raise or lower debris to the platform      */
 /*   Inputs: (gamepad2 a and b ), winch_angle                           */
-/*   Outputs: Winch Motor Drive commands                                */
-/*   Returns: status of winch_extend_control                            */
+/*   Outputs: Winch Motor Drive commands, winch_extend_time             */
+/*   Returns: winch_effort                                              */
 /************************************************************************/   
-    public static int winch_extend_control (double winch_angle) {
-        int winch_extend_status = 0;
-
+    public static double winch_extend_control (double winch_angle) {
+       
         max_winch_effort = 1;
         if (gamepad2.b) {
             winch_extend = .25;
@@ -258,7 +260,7 @@ public class New_Test2 extends OpMode
         }
     
         winch.setPower(winch_extend);
-        return (winch_status);
+        return (winch_extend);
     }
 /************************************************************************/    
 /*                      winch_angle_control                             */ 
