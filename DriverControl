@@ -78,16 +78,13 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
 
     }
 
-/************************************************************************/    
-/*                 climb_release                                        */ 
+/************************************************************************/
+/*                 climb_release                                        */
 /*   Inputs: (gamepad2 x and y)                                         */
 /*   Outputs: Left_Climber_Releaser servo                               */
 /*            Right_Climber_Releaser servo                              */
 /*   Returns:  Status                                                   */
-
-    /**
-     * ********************************************************************
-     */
+/************************************************************************/
     public int climb_release() {
        /* int climb_release_status = 0;
         double Right_Flip_pos = 0.45;
@@ -106,14 +103,14 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         if (gamepad2.x){
             if (right_releaser == 1){
                 i += 1;
-                if (i == 100) {
+                if (i >= 100) {
                     right_releaser = 0;
                     i = 0;
                 }
             }
             else if (right_releaser == 0){
                 i+= 1;
-                if (i== 100){
+                if (i>= 100){
                     right_releaser = 1;
                 }
             }
@@ -125,14 +122,14 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         if (gamepad2.y){
             if (left_releaser == 1){
                 j += 1;
-                if (j == 100) {
+                if (j >= 100) {
                     left_releaser = 0;
                     j = 0;
                 }
             }
             else if (left_releaser == 0){
                 j+= 1;
-                if (j== 100){
+                if (j>= 100){
                     left_releaser = 1;
                 }
             }
@@ -146,8 +143,8 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         return 0;
     }
 
-/************************************************************************/    
-/*                 unloader  -- Unload debris controls                  */ 
+/************************************************************************/
+/*                 unloader  -- Unload debris controls                  */
 /*   Inputs: (gamepad2 left and right   dpad                            */
 /*   Outputs: Unloader                                                  */
 /*   Returns:  Status                                                   */
@@ -164,22 +161,19 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
     }
 
 
-/************************************************************************/    
-/*                     filter_input                                     */ 
-/*      Read the inputs, post process them, and produce the             */ 
+/************************************************************************/
+/*                     filter_input                                     */
+/*      Read the inputs, post process them, and produce the             */
 /*      output Motor Drive commands                                     */
 /*   Inputs: stick position, previous stick position                    */
 /*   Outputs: (return value)                                            */
 /*   Returns:  Filtered stick position                                  */
-
-    /**
-     * ********************************************************************
-     */
+/************************************************************************/
     public static float filter_input(float instick, float prevStickPos) {
         float filter_constant = 0;  /*init to zero just in case */
         /* cube the input stick to give better response around zero */
         instick = instick * instick * instick;
-       
+
         /*  Select which filter constant to use for stick position. Use -0.05 */
         /* as lowest stick pos for filtered value lets the controller springs */
         /* overshoot a little                                                 */
@@ -206,16 +200,13 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         return (prevStickPos);
     }
 
-/************************************************************************/    
-/*                      escalator_control                               */ 
+/************************************************************************/
+/*                      escalator_control                               */
 /*      Control the motor to raise or lower debris to the platform      */
 /*   Inputs: (gamepad1 left and right triggers)                         */
 /*   Outputs: Escalator Motor Drive commands                            */
 /*   Returns: status of escalator_control                               */
-
-    /**
-     * ********************************************************************
-     */
+/************************************************************************/
     public int escalator_control() {
         int esca_status = 0;
 
@@ -233,9 +224,9 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         return (esca_status);
     }
 
-/************************************************************************/    
-/*                      drive_motor_control                             */ 
-/*      Read the inputs, post process them, and produce the             */ 
+/************************************************************************/
+/*                      drive_motor_control                             */
+/*      Read the inputs, post process them, and produce the             */
 /*      output Motor Drive commands                                     */
 /*   Inputs: whinch effort, whinch duration                             */
 /*           (gamepad1 left stick y, gamepad1 right stick y)            */
@@ -249,14 +240,14 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         float abs_effort;
         float max_drive_value = (float) 1.00;
         float min_drive_value = (float) 0.00;
-        
+
         /* first get the raw effort from stick inputs then restrict as needed */
         /* Before setting hard limits, filter the stick input to reduce jitter*/
         float left_drive_effort = filter_input(gamepad1.left_stick_y, prev_leftStickPos);
         prev_leftStickPos = left_drive_effort;
         float right_drive_effort = filter_input(gamepad1.right_stick_y, prev_rightStickPos);
         prev_rightStickPos = right_drive_effort;
-          
+
         /* put a min and max on whinch effort depending on       */
         /* 1) if the whinch is being retracted for quite a while */
         /* 2) if the "low range" button has been asserted       */
@@ -276,7 +267,7 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
 
         left_Drive.setPower(left_drive_effort);
         right_Drive.setPower(right_drive_effort);
-        
+
         /* abs_effort restricts whinch retract speed while in motion       */
         /* tricky part is to keep it from interfering with drive commands */
         abs_effort = Math.abs(left_drive_effort) + Math.abs(right_drive_effort);
@@ -284,15 +275,12 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
     }
 
 /************************************************************************/
-/*                      whinch_extend_control                            */
+/*                      whinch_extend_control                           */
 /*      Control the motor to raise or lower debris to the platform      */
-/*   Inputs: (gamepad2 a and b ), whinch_angle                           */
-/*   Outputs: whinch Motor Drive commands, whinch_extend_time             */
-/*   Returns: whinch_effort                                              */
-
-    /**
-     * ********************************************************************
-     */
+/*   Inputs: (gamepad2 a and b ), whinch_angle                          */
+/*   Outputs: whinch Motor Drive commands, whinch_extend_time           */
+/*   Returns: whinch_effort                                             */
+/************************************************************************/
     public double whinch_extend_control(double whinch_angle, double abs_effort) {
 
         max_whinch_effort = 1;
@@ -308,26 +296,18 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         if (gamepad2.a) {
             whinch_extend = -.95;
             whinch_retract_time += 1;
-        } else {
-            whinch_retract_time = 0;
-        }
+        } else whinch_retract_time = 0;
 
         /*if (left_drive_effort >= 0.05) {
             if (right_drive_effort >= 0.05)*/
-        if (abs_effort >= 0.5){
-                max_whinch_effort = 0.4;
-            }
-        }
+        if (abs_effort >= 0.5) max_whinch_effort = 0.4;
+        if (whinch_extend > max_whinch_effort) whinch_extend = max_whinch_effort;
 
-        if (whinch_extend > max_whinch_effort) {
-            whinch_extend = max_whinch_effort;
-        }
-
-        Whinch.setPower(0);
+        Whinch.setPower(whinch_extend);
         return (whinch_extend);
     }
-/************************************************************************/    
-/*                      whinch_angle_control                             */ 
+/************************************************************************/
+/*                      whinch_angle_control                             */
 /*      Control the motor to raise or lower debris to the platform      */
 /*   Inputs: (gamepad2 left and right bumpers )                         */
 /*   Outputs: whinch angle servo commands                                */
@@ -341,6 +321,7 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         int whinch_retracting = 0;
 
         max_whinch_effort = 1;
+        if (whinch_effort < 0) whinch_extending = 1;
         if (gamepad2.right_bumper) {
             whinch_position = whinch_position + 0.001;
         } else if (gamepad2.left_bumper) {
@@ -361,7 +342,7 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         whinch_pos.setPosition(whinch_position);
         return (whinch_position);
     }
-/************************************************************************/    
+/************************************************************************/
 /*                                  MAIN                                */
 /************************************************************************/
     @Override
@@ -370,11 +351,11 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
 // also need to ensure the data goes between them smoothly
 // and ... I dunno, do you think there'll be a debug cycle ?  :D
 
-        
+
         /* whinch control  */
-        double w_angle = whinch_angle_control((double)w_effort);
+        double w_angle = whinch_angle_control(w_effort);
         w_effort = whinch_extend_control(w_angle, drive_power);
-        
+
         /* Escalator control */
         int unload_status = unloader();
         int escalator_status = escalator_control();
