@@ -21,6 +21,7 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
     Servo Right_Climber_Releaser;
     Servo Left_Climber_Releaser;
     Servo whinch_pos;
+    Servo Kraken;
 
 
     public double left_releaser = 0;
@@ -64,6 +65,8 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
 
 
         right_Drive.setDirection(DcMotor.Direction.REVERSE);
+
+        Kraken = hardwareMap.servo.get("Kraken");
 
         max_whinch_pos = .9;
 
@@ -296,7 +299,8 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         if (gamepad2.a) {
             whinch_extend = -.95;
             whinch_retract_time += 1;
-        } else whinch_retract_time = 0;
+        } else
+        {whinch_retract_time = 0;}
 
         /*if (left_drive_effort >= 0.05) {
             if (right_drive_effort >= 0.05)*/
@@ -341,6 +345,24 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
 
         whinch_pos.setPosition(whinch_position);
         return (whinch_position);
+
+    }
+
+/************************************************************************/
+/*        CAUTION: KRAKEN CODE
+/*        Drops the climbers in the bin
+/*
+/*
+*/
+        public int kraken_unleash() {
+            int kraken_unleash_status = 0;
+            double kraken_target = .5;
+
+            if (gamepad1.y) kraken_target = 0;
+            if (gamepad2.x) kraken_target = 1;
+            Kraken.setPosition(kraken_target);
+            return kraken_unleash_status;
+
     }
 /************************************************************************/
 /*                                  MAIN                                */
@@ -360,6 +382,7 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         int unload_status = unloader();
         int escalator_status = escalator_control();
         int climb_release_status = climb_release();
+        int kraken_unleash_status = kraken_unleash();
 
         /* drive the robot */
         drive_power = drive_motor_control(whinch_retract_time);
@@ -368,5 +391,9 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         telemetry.addData("02", "Gamepad2 info" + gamepad2.toString());
         telemetry.addData("03", i);
         telemetry.addData("4" , j);
+        telemetry.addData("5" , unload_status);
+        telemetry.addData("6" , escalator_status);
+        telemetry.addData("7" , climb_release_status);
+        telemetry.addData("8" , kraken_unleash_status);
     }
 }
