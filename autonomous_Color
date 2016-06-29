@@ -1,0 +1,89 @@
+package com.qualcomm.ftcrobotcontroller.opmodes;
+
+import android.graphics.Color;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+
+/**
+ * Created by Yestika, Carlos  on 6/22/2016.
+ */
+public class Autonomous_Mode_2 extends LinearOpMode {
+
+    DcMotor right_Drive;
+    DcMotor left_Drive;
+    Servo Kraken;
+    ColorSensor Colory;
+    UltrasonicSensor Ultrasony;
+
+    public double u = Ultrasony.getUltrasonicLevel();
+
+    public enum ColorSensorDevice {ADAFRUIT, HITECHNIC_NXT, MODERN_ROBOTICS_I2C};
+
+    public ColorSensorDevice device = ColorSensorDevice.MODERN_ROBOTICS_I2C;
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        hardwareMap.logDevices();
+
+        //cdim = hardwareMap.deviceInterfaceModule.get("dim");
+        switch (device) {
+            case HITECHNIC_NXT:
+                Colory = hardwareMap.colorSensor.get("nxt");
+                break;
+            case ADAFRUIT:
+                Colory = hardwareMap.colorSensor.get("lady");
+                break;
+            case MODERN_ROBOTICS_I2C:
+                Colory = hardwareMap.colorSensor.get("mr");
+                break;
+        }
+        float hsvValues[] = {0F,0F,0F};
+       switch (device) {
+            case HITECHNIC_NXT:
+                Color.RGBToHSV(Colory.red(),Colory.green(),Colory.blue(),hsvValues);
+                break;
+            case ADAFRUIT:
+                Color.RGBToHSV((Colory.red() * 255) / 800,(Colory.green() * 255) / 800,(Colory.blue() * 255) / 800,hsvValues);
+                break;
+            case MODERN_ROBOTICS_I2C:
+                Color.RGBToHSV(Colory.red()*8,Colory.green()*8,Colory.blue()*8,hsvValues);
+                break;
+        }
+
+        right_Drive = hardwareMap.dcMotor.get("right_drive");
+        left_Drive = hardwareMap.dcMotor.get("left_drive");
+        Kraken = hardwareMap.servo.get("Kraken");
+        Colory = hardwareMap.colorSensor.get("Colory");
+        Ultrasony = hardwareMap.ultrasonicSensor.get("Ultrasony");
+
+        right_Drive.setDirection(DcMotor.Direction.REVERSE);
+
+        hardwareMap.logDevices();
+
+
+
+
+        waitForStart();
+
+        while(true){
+
+            if(u>2){
+                left_Drive.setPower(-0.75);
+                right_Drive.setPower(-0.75);
+            }
+
+            else {
+                left_Drive.setPower(0);
+                right_Drive.setPower(0);
+
+            }
+        }
+
+
+    }
+}
