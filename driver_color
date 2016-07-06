@@ -235,18 +235,17 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         esca_Drive.setPower(esca_drive_effort);
         return (esca_status);
     }
-
 /************************************************************************/
-/*                      drive_motor_control                             */
+/*                      drive_motor_command                             */
 /*      Read the inputs, post process them, and produce the             */
 /*      output Motor Drive commands                                     */
 /*   Inputs: whinch effort, whinch duration                             */
 /*           (gamepad1 left stick y, gamepad1 right stick y)            */
 /*   Outputs: Left motor Drive, Right Motor Drive commands              */
-/*   Returns: Absolute Value of motor effort                            */
+/*   Returns: absolute drive command                                    */
 /************************************************************************/
 
-    public float drive_motor_control(double ret_cts) {
+    public float drive_motor_command(double ret_cts) {
         /*float left_drive_effort = 0;*/
         /*float right_drive_effort = 0;*/
         float abs_effort;
@@ -276,13 +275,33 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
 
         if (right_drive_effort < min_drive_value) right_drive_effort = min_drive_value;
         if (right_drive_effort > max_drive_value) right_drive_effort = max_drive_value;
-
-        left_Drive.setPower(left_drive_effort);
-        right_Drive.setPower(right_drive_effort);
-
         /* abs_effort restricts whinch retract speed while in motion       */
         /* tricky part is to keep it from interfering with drive commands */
         abs_effort = Math.abs(left_drive_effort) + Math.abs(right_drive_effort);
+        return abs_effort;
+    }
+
+/************************************************************************/
+/*                      drive_motor_control                             */
+/*      Read the inputs, post process them, and produce the             */
+/*      output Motor Drive hardware output                              */
+/*   Inputs: right drive command, left drive command                    */
+/*   Outputs: Left and right motor  h/w output                          */
+/*   Returns: Absolute Value of motor effort                            */
+/************************************************************************/
+
+    public float drive_motor_control(float left_cmd, float right_cmd) {
+
+        if (left_cmd < -1) left_cmd = -1;
+        if (left_cmd > 1) left_cmd = 1;
+
+        if (right_cmd < -1) right_cmd = -1;
+        if (right_cmd > 1) right_cmd = 1;
+
+        left_Drive.setPower(left_cmd);
+        right_Drive.setPower(right_cmd);
+        
+        abs_effort = Math.abs(left_cmd) + Math.abs(right_cmd);
         return abs_effort;
     }
 
@@ -320,15 +339,12 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         return (whinch_extend);
     }
 /************************************************************************/
-/*                      whinch_angle_control                             */
+/*                      whinch_angle_control                            */
 /*      Control the motor to raise or lower debris to the platform      */
 /*   Inputs: (gamepad2 left and right bumpers )                         */
-/*   Outputs: whinch angle servo commands                                */
-/*   Returns: whinch position                                            */
-
-    /**
-     * ********************************************************************
-     */
+/*   Outputs: whinch angle servo commands                               */
+/*   Returns: whinch position                                           */
+/************************************************************************/
     public double whinch_angle_control(double whinch_effort) {
         int whinch_extending = 0;
         int whinch_retracting = 0;
@@ -406,7 +422,8 @@ public class In_Case_Of_Emergency_Use_Code extends OpMode {
         int kraken_unleash_status = kraken_unleash();
 
         /* drive the robot */
-        drive_power = drive_motor_control(whinch_retract_time);
+        drive_command = drive_motor_command(whinch_retract_time);
+        drive_power = drive_motor_control(left_drive_effort, right_drive_effort);
                 //Push Gamepad commands to console
         telemetry.addData("01", "Gamepad1 info" + gamepad1.toString());
         telemetry.addData("02", "Gamepad2 info" + gamepad2.toString());
