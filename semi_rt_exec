@@ -1,0 +1,38 @@
+/************************************************************************/    
+/*                                  MAIN                                */
+/* Not yet run, but something like this should work for scheduled tasks */
+/************************************************************************/
+    @Override
+    public void loop() {
+/* must define variables of type long such as:     */
+/* 
+   long current_uptime = 0;      
+   long frame1_time = 0;
+   long frame2_time = 0; 
+   long frame1_rate = 20; // incorrect use of rate, I know
+   long frame2_rate = 20;
+   long frame_offset = 10;
+*/
+       current_uptime = uptimeMillis();
+       if (frame1_time == 0) {
+          frame1_time = current_uptime;
+          frame2_time = frame1_time + frame_offset;
+       }
+       if (current_uptime - frame1_time > frame1_rate) 
+       {
+          /* do frame1 stuff in here, possibly read sensors */
+          frame1_time = current_uptime;
+       }
+       if (current_uptime - frame2_time > frame2_rate)
+       {
+          /* do frame 2 stuff here, possibly nav and/or drive outputs*/
+          frame2_time = current_uptime;
+       }
+        
+
+                //Push Gamepad commands to console
+        telemetry.addData("01", "Gamepad1 info" + gamepad1.toString());
+        telemetry.addData("02", "Gamepad2 info" + gamepad2.toString());
+        telemetry.addData("03", i);
+        telemetry.addData("4" , j);
+    }
